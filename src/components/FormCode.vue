@@ -92,8 +92,9 @@ export default {
         console.error('XHR was send')
         let url = 'https://openwhisk.eu-gb.bluemix.net/api/v1/web/novar.ludovic%40gmail.com_dev/default/colorSyntax'
         // let url = 'http://51.15.48.116/login/api'
+        let data = JSON.stringify(this.model)
 
-        let data = this.model
+        console.log(data);
 
         let xhr = new XMLHttpRequest()
 
