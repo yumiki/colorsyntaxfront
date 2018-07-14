@@ -1,85 +1,40 @@
 <template>
   <div class="formCode">
-    <h1>Colorateur syntaxique de code</h1>
-
-    <p>Example showing vue-form usage with Bootstrap styles, validation messages are shown on field touched or form submission</p>
-
     <vue-form :state="formstate" @submit.prevent="onSubmit">
 
-      <validate auto-label class="form-group required-field" :class="fieldClassName(formstate.name)">
-        <label>Name</label>
-        <input type="text" name="name" class="form-control" required v-model.lazy="model.name">
-
-        <field-messages name="name" show="$touched || $submitted" class="form-control-feedback">
-          <div>Success!</div>
-          <div slot="required">Name is a required field</div>
-        </field-messages>
-
-      </validate>
-
-      <validate auto-label class="form-group required-field" :class="fieldClassName(formstate.email)">
+      <validate auto-label class="form-group" :class="fieldClassName(formstate.email)">
         <label>Email</label>
-        <input type="email" name="email" class="form-control" required v-model.lazy="model.email">
+        <input type="email" name="email" class="form-control" v-model.lazy="model.email">
 
         <field-messages auto-label name="email" show="$touched || $submitted" class="form-control-feedback">
           <div>Success!</div>
-          <div slot="required">Email is a required field</div>
           <div slot="email">Email is invalid</div>
         </field-messages>
 
       </validate>
 
-      <validate auto-label class="form-group required-field" :class="fieldClassName(formstate.phone)">
-        <label>Phone number (format: xxxx-xxx-xxxx)</label>
-        <input type="tel" name="phone" class="form-control" required pattern="^\d{4}-\d{3}-\d{4}$" v-model.lazy="model.phone">
+      <validate auto-label class="form-group required-field" :class="fieldClassName(formstate.language)">
+        <label>Langage</label>
 
-        <field-messages name="phone" show="$touched || $submitted" class="form-control-feedback">
-          <div>Success!</div>
-          <div slot="required">Phone number is a required field</div>
-          <div slot="pattern">Phone number is invalid</div>
-        </field-messages>
-
-      </validate>
-
-      <validate auto-label class="form-group required-field" :class="fieldClassName(formstate.department)">
-        <label>Department</label>
-
-        <select class="form-control" name="department" required v-model.lazy="model.department">
+        <select class="form-control" name="language" required v-model.lazy="model.language">
           <option :value="null">Choose...</option>
-          <option value="1">AAA</option>
-          <option value="2">BBB</option>
-          <option value="3">CCC</option>
+          <option v-for="(language,index) in availableLanguages" :key="index" :value="language">{{language}}</option>
         </select>
 
-        <field-messages name="department" show="$touched || $dirty || $submitted" class="form-control-feedback">
+        <field-messages name="language" show="$touched || $dirty || $submitted" class="form-control-feedback">
           <div>Success!</div>
-          <div slot="required">Department is a required field</div>
+          <div slot="required">Language is a required field</div>
         </field-messages>
 
       </validate>
 
-      <validate auto-label class="form-group" :class="fieldClassName(formstate.comments)">
-        <label>Comments</label>
-        <textarea name="comments" class="form-control" maxlength="50" v-model.lazy="model.comments"></textarea>
-        <small class="form-text text-muted">Enter no more than 50 characters.</small>
-        <field-messages name="comments" show="$touched || $submitted" class="form-control-feedback">
+      <validate auto-label class="form-group" :class="fieldClassName(formstate.code)">
+        <label>Code</label>
+        <textarea name="comments" class="form-control" :maxlength="limit" v-model.lazy="model.code" style="height: 300px"></textarea>
+        <small class="form-text text-muted">Vous ne pouvez pas mettre plus de {{limit}} caractères.</small>
+        <field-messages name="code" show="$touched || $submitted" class="form-control-feedback">
           <div>Success!</div>
-          <div slot="maxlength">Comments must be less than 50 characters</div>
-        </field-messages>
-      </validate>
-
-      <field class="form-group">
-        <label>Not validated</label>
-        <input type="text" name="notValidated" class="form-control" v-model.lazy="model.notValidated">
-      </field>
-
-      <validate class="form-check" :class="fieldClassName(formstate.agree)">
-        <label class="form-check-label">
-          <input type="checkbox" class="form-check-input" required name="agree" v-model="model.agree">
-          I agree to the terms
-        </label>
-        <field-messages name="agree" show="$touched || $submitted" class="form-control-feedback">
-          <div slot="required">You must agree to the terms</div>
+          <div slot="maxlength">Vous ne pouvez pas mettre plus de {{limit}} caractères</div>
         </field-messages>
       </validate>
 
@@ -87,25 +42,25 @@
         <button class="btn btn-primary" type="submit">Submit</button>
       </div>
     </vue-form>
-
-    <pre>{{formstate}}</pre>
   </div>
 </template>
 
 <script>
+  import HighlightCode from './HighlightCode.vue'
 export default {
   name: 'form-code',
+  components: {
+    HighlightCode
+  },
   data () {
     return {
+      limit: 3000,
       formstate: {},
+      availableLanguages: ['JavaScript','PHP','LaTeX'],
       model: {
-        name: '',
         email: '',
-        phone: '',
-        department: null,
-        comments: '',
-        notValidated: '',
-        agree: false
+        language: null,
+        code: '',
       }
     }
   },
@@ -123,11 +78,58 @@ export default {
     },
     onSubmit: function() {
       console.log(this.formstate.$valid);
+      console.log(this.model);
+      if(this.model.code!==null && this.model.language!==null)
+      this.submitForm().then(value => {
+        console.error(value)
+        console.debug(value)
+      }, reason => {
+        console.error(reason)
+      })
+    },
+    submitForm:  function () {
+      return new Promise((resolve, reject) => {
+        console.error('XHR was send')
+        let url = 'https://openwhisk.eu-gb.bluemix.net/api/v1/web/novar.ludovic%40gmail.com_dev/default/colorSyntax'
+        // let url = 'http://51.15.48.116/login/api'
+
+        let data = this.model
+
+        let xhr = new XMLHttpRequest()
+
+        xhr.open('POST', url)
+
+        xhr.setRequestHeader('content-type', 'application/json')
+
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            // If successful, resolve the promise by passing back the request response
+            let json = JSON.parse(xhr.responseText)
+            console.log(json)
+            resolve(json)
+          } else {
+            // If it fails, reject the promise with a error message
+            reject(Error('Error code:' + xhr.statusText))
+          }
+        }
+
+        xhr.onerror = function () {
+          // Also deal with the case when the entire request fails to begin with
+          // This is probably a network error, so reject the promise with an appropriate message
+          reject(Error('There was a network error.'))
+        }
+
+        xhr.send(data)
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-
+  .required-field > label::after {
+    content: '*';
+    color: red;
+    margin-left: 0.25rem;
+  }
 </style>

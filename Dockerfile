@@ -8,3 +8,5 @@ COPY docker_build/config/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY docker_build/config/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]
+
+EXPOSE 80
