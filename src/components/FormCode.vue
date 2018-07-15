@@ -47,6 +47,8 @@
 
 <script>
   import HighlightCode from './HighlightCode.vue'
+  import {mapMutations} from 'vuex'
+
 export default {
   name: 'form-code',
   components: {
@@ -56,7 +58,7 @@ export default {
     return {
       limit: 3000,
       formstate: {},
-      availableLanguages: ['JavaScript','PHP','LaTeX'],
+      availableLanguages: ['javascript','php','cs'],
       model: {
         email: '',
         language: null,
@@ -65,6 +67,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setCode']),
     fieldClassName: function (field) {
       if(!field) {
         return '';
@@ -81,44 +84,37 @@ export default {
       console.log(this.model);
       if(this.model.code!==null && this.model.language!==null)
       this.submitForm().then(value => {
-        console.error(value)
-        console.debug(value)
+        this.setCode(value);
       }, reason => {
         console.error(reason)
       })
     },
     submitForm:  function () {
       return new Promise((resolve, reject) => {
-        console.error('XHR was send')
-        let url = 'https://openwhisk.eu-gb.bluemix.net/api/v1/web/novar.ludovic%40gmail.com_dev/default/colorSyntax'
-        // let url = 'http://51.15.48.116/login/api'
-        let data = JSON.stringify(this.model)
+        let url = 'https://openwhisk.eu-gb.bluemix.net/api/v1/web/novar.ludovic%40gmail.com_dev/default/colorSyntax';
+        let data = JSON.stringify(this.model);
 
         console.log(data);
 
-        let xhr = new XMLHttpRequest()
+        let xhr = new XMLHttpRequest();
 
-        xhr.open('POST', url)
+        xhr.open('POST', url);
 
-        xhr.setRequestHeader('content-type', 'application/json')
+        xhr.setRequestHeader('content-type', 'application/json');
 
         xhr.onload = function () {
           if (xhr.status === 200) {
-            // If successful, resolve the promise by passing back the request response
-            let json = JSON.parse(xhr.responseText)
-            console.log(json)
+            let json = JSON.parse(xhr.responseText);
+            console.log(json);
             resolve(json)
           } else {
-            // If it fails, reject the promise with a error message
             reject(Error('Error code:' + xhr.statusText))
           }
-        }
+        };
 
         xhr.onerror = function () {
-          // Also deal with the case when the entire request fails to begin with
-          // This is probably a network error, so reject the promise with an appropriate message
           reject(Error('There was a network error.'))
-        }
+        };
 
         xhr.send(data)
       })

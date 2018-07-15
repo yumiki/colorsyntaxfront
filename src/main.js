@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import store from './store'
 import VueForm from 'vue-form';
 
 Vue.config.productionTip = false;
@@ -18,6 +19,7 @@ Vue.use(VueForm, {
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 });
