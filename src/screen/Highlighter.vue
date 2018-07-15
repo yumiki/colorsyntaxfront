@@ -35,15 +35,15 @@
     float:left;
     width:55%;
     overflow:hidden;
-    padding-left: 15px;
-    padding-right: 25px;
+    padding-left: 16px;
+    padding-right: 8px;
   }
   .right{
     float:left;
     width:45%;
     overflow:hidden;
-    padding-left: 25px;
-    padding-right: 15px;
+    padding-left: 8px;
+    padding-right: 16px;
 
   }
 </style>

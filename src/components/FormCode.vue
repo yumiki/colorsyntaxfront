@@ -39,7 +39,7 @@
       </validate>
 
       <div class="py-2 text-center">
-        <button class="btn btn-primary" type="submit">Submit</button>
+        <button class="btn btn-primary" type="submit" :disabled="this.loading===true">Submit</button>
       </div>
     </vue-form>
   </div>
@@ -47,9 +47,9 @@
 
 <script>
   import HighlightCode from './HighlightCode.vue'
-  import {mapMutations} from 'vuex'
+  import {mapMutations,mapState} from 'vuex'
 
-export default {
+  export default {
   name: 'form-code',
   components: {
     HighlightCode
@@ -66,8 +66,14 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState({
+      code: (state) => state.code,
+      loading: (state) => state.loading.currentState
+    })
+  },
   methods: {
-    ...mapMutations(['setCode']),
+    ...mapMutations(['setCode','setLoading']),
     fieldClassName: function (field) {
       if(!field) {
         return '';
@@ -87,6 +93,9 @@ export default {
         this.setCode(value);
       }, reason => {
         console.error(reason)
+      }).finally(()=>{
+        console.error('Au final')
+        this.setLoading({currentState: false})
       })
     },
     submitForm:  function () {
@@ -117,6 +126,7 @@ export default {
         };
 
         xhr.send(data)
+        this.setLoading({currentState: true})
       })
     }
   }

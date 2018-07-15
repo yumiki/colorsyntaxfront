@@ -6,6 +6,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     code: {},
+    loading: {
+      currentState: false
+    }
   },
   getters: {
     code: (state) => state.code,
@@ -13,6 +16,9 @@ export default new Vuex.Store({
   mutations: {
     setCode (state, code) {
       state.code = code
+    },
+    setLoading (state, loading) {
+      state.loading = loading
     }
   },
 })
